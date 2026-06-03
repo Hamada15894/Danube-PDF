@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Danube Converter v7 | محول الدانوب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<style>
+:root{
+ --bg:#0c1726;--bg2:#10202f;--panel:#152739;--panel2:#1b3147;--line:rgba(255,255,255,.08);
+ --ink:#eaf1f8;--muted:#8fa3b8;--brand:#e11b2e;--brand2:#ff4757;--accent:#13b981;--accent2:#0ea571;
+ --navy:#1f4e79;--gold:#e6a93c;--rad:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'IBM Plex Sans Arabic',system-ui,Tahoma,sans-serif;color:var(--ink);min-height:100vh;
+ background:radial-gradient(1200px 600px at 80% -10%,rgba(31,78,121,.35),transparent 60%),radial-gradient(900px 500px at -10% 10%,rgba(225,27,46,.12),transparent 55%),linear-gradient(160deg,var(--bg),var(--bg2));
+ padding:24px}
+.wrap{max-width:1320px;margin:0 auto}
+.lang{position:fixed;top:18px;left:18px;z-index:1000;background:rgba(255,255,255,.06);border:1px solid var(--line);
+ border-radius:12px;padding:9px 16px;cursor:pointer;color:var(--ink);font-weight:700;font-family:inherit;backdrop-filter:blur(6px)}
+.lang:hover{background:var(--brand);border-color:var(--brand)}
+/* App bar */
+.appbar{display:flex;align-items:center;gap:16px;background:linear-gradient(120deg,var(--panel),var(--panel2));
+ border:1px solid var(--line);border-radius:var(--rad);padding:22px 26px;margin-bottom:22px;
+ box-shadow:0 18px 40px -24px rgba(0,0,0,.8)}
+.logo{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:26px;flex:none;
+ background:linear-gradient(135deg,var(--brand),#b3121f);box-shadow:0 8px 22px -8px var(--brand)}
+.appbar h1{font-size:1.5em;font-weight:700;letter-spacing:-.3px;line-height:1.2}
+.appbar p{color:var(--muted);font-size:.92em;margin-top:3px}
+.vchip{margin-inline-start:auto;font-size:.78em;color:var(--gold);border:1px solid rgba(230,169,60,.4);
+ border-radius:999px;padding:6px 14px;white-space:nowrap;background:rgba(230,169,60,.08)}
+/* Key legend */
+.legend{display:flex;flex-wrap:wrap;gap:18px;align-items:center;background:var(--panel);border:1px solid var(--line);
+ border-radius:var(--rad);padding:14px 20px;margin-bottom:22px;font-size:.9em;color:var(--muted)}
+.legend b{color:var(--ink)}
+.tag{display:inline-block;padding:2px 9px;border-radius:7px;font-weight:700;font-size:.92em}
+.tag.y{background:#ffe783;color:#5b4a00}.tag.g{background:#9ff3b6;color:#064d23}
+/* Cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-bottom:22px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);padding:26px;text-align:center;
+ position:relative;transition:.25s;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,transparent,var(--brand),transparent);opacity:.5}
+.card:hover,.card.on{border-color:rgba(225,27,46,.5);transform:translateY(-4px);box-shadow:0 20px 40px -28px rgba(0,0,0,.9)}
+.card.req::before{background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.card.saved{border-color:rgba(31,78,121,.7)}
+.card.saved::before{background:linear-gradient(90deg,transparent,#3d8bd4,transparent);opacity:1}
+.ico{font-size:2.4em;margin-bottom:12px}
+.card h3{font-size:1.05em;margin-bottom:6px}
+.card .desc{color:var(--muted);font-size:.85em;margin-bottom:16px;min-height:34px}
+.fin{display:none}
+.btn{font-family:inherit;background:linear-gradient(135deg,var(--brand),#b3121f);color:#fff;padding:11px 26px;border:none;
+ border-radius:11px;font-size:.95em;font-weight:600;cursor:pointer;transition:.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px -10px var(--brand)}
+.btn.sm{padding:8px 15px;font-size:.82em;border-radius:9px}
+.btn.ghost{background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--ink)}
+.btn.ghost:hover{background:rgba(225,27,46,.18);box-shadow:none}
+.btn.danger{background:linear-gradient(135deg,#c62828,#8e1414)}
+.rowbtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.st{margin-top:12px;padding:8px 12px;border-radius:9px;font-size:.82em;display:none;text-align:center}
+.st.ok{display:block;background:rgba(19,185,129,.16);color:#5ff0b6;border:1px solid rgba(19,185,129,.3)}
+.st.warn{display:block;background:rgba(230,169,60,.14);color:#ffce7a;border:1px solid rgba(230,169,60,.3)}
+.st.info{display:block;background:rgba(61,139,212,.16);color:#8fc3f5;border:1px solid rgba(61,139,212,.3)}
+/* Action */
+.act{text-align:center;margin:28px 0}
+.big{font-family:inherit;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04201a;padding:17px 56px;
+ border:none;border-radius:14px;font-size:1.15em;font-weight:700;cursor:pointer;transition:.25s;letter-spacing:.2px}
+.big:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 16px 36px -16px var(--accent)}
+.big:disabled{opacity:.4;cursor:not-allowed}
+/* Progress */
+.prog{display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);padding:26px;margin-bottom:22px}
+.prog h2{font-size:1.1em;margin-bottom:6px}
+.bar{width:100%;height:14px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden;margin:16px 0}
+.fill{height:100%;width:0%;background:linear-gradient(90deg,var(--brand),var(--gold));transition:width .4s;
+ display:flex;align-items:center;justify-content:center;font-size:0}
+.logs{background:rgba(0,0,0,.32);border-radius:11px;padding:14px;max-height:260px;overflow-y:auto;
+ font-family:ui-monospace,monospace;font-size:.82em;color:#7fe3b0;text-align:left;direction:ltr}
+.logs .e{color:#ff6b6b}.logs .s{color:#5ff0b6}.logs .w{color:#ffce7a}.logs .i{color:#8fa3b8}
+/* Results */
+.res{display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);padding:26px;margin-bottom:22px}
+.res h2{font-size:1.25em;margin-bottom:14px}
+.info{background:rgba(19,185,129,.08);border:1px solid rgba(19,185,129,.25);border-radius:12px;padding:16px 18px;margin:14px 0;font-size:.9em}
+.info h4{color:var(--accent);margin-bottom:8px}
+.info ul{list-style:none}.info li{padding:3px 0;color:#c7d3df}.info li::before{content:"●";color:var(--accent);margin-inline-end:8px;font-size:.7em;vertical-align:middle}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin:18px 0}
+.stat{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:13px;padding:18px;text-align:center}
+.stat .n{font-size:1.9em;font-weight:700;color:#fff}.stat .l{color:var(--muted);margin-top:4px;font-size:.82em}
+.dlg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px;margin:18px 0}
+.dl{font-family:inherit;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04201a;padding:14px;border:none;
+ border-radius:12px;font-size:.92em;font-weight:700;cursor:pointer;transition:.2s}
+.dl:hover{transform:translateY(-3px);box-shadow:0 14px 30px -16px var(--accent)}
+.dl.b{background:linear-gradient(135deg,#2e74b5,#1f4e79);color:#fff}
+.dl.p{background:linear-gradient(135deg,#7b4bc4,#5a2ea6);color:#fff}
+.dl.o{background:linear-gradient(135deg,var(--gold),#c9871f);color:#3a2700}
+/* Preview table */
+.tablewrap{overflow:auto;max-height:440px;border:1px solid var(--line);border-radius:12px;margin-top:14px}
+table{width:100%;border-collapse:collapse;font-size:.8em;background:rgba(0,0,0,.15)}
+th,td{padding:8px 11px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+thead th{background:var(--navy);position:sticky;top:0;z-index:2;border-inline-end:1px solid rgba(255,255,255,.12)}
+.hen{font-weight:700;color:#fff;font-size:1em}.har{font-weight:400;color:#cfe0f0;font-size:.85em;margin-top:1px}
+tbody td{color:#d4dde7}tbody tr:nth-child(even){background:rgba(255,255,255,.03)}tbody tr:hover{background:rgba(31,78,121,.25)}
+/* Panels */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);padding:22px;margin-bottom:22px}
+.panel h3{margin-bottom:6px;font-size:1.05em}
+.panel .hint{color:var(--muted);font-size:.86em;margin-bottom:14px}
+.debug{background:rgba(230,169,60,.08);border:1px solid rgba(230,169,60,.25);border-radius:11px;padding:14px;margin:14px 0;
+ font-size:.78em;max-height:220px;overflow:auto;font-family:ui-monospace,monospace;text-align:left;direction:ltr;color:#ffd699}
+.debug h4{color:var(--gold);margin-bottom:8px}
+footer{text-align:center;padding:26px;color:#5d6f82;font-size:.85em}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-track{background:rgba(0,0,0,.2)}::-webkit-scrollbar-thumb{background:var(--navy);border-radius:6px}
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-140%);z-index:3000;padding:13px 22px;border-radius:12px;font-weight:600;font-size:.95em;box-shadow:0 16px 40px -16px rgba(0,0,0,.7);opacity:0;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s;pointer-events:none;max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.ok{background:linear-gradient(135deg,#13b981,#0ea571);color:#04201a}
+.toast.warn{background:linear-gradient(135deg,#e6a93c,#c9871f);color:#3a2700}
+.toast.err{background:linear-gradient(135deg,#e11b2e,#b3121f);color:#fff}
+</style>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+<button class="lang" onclick="togLang()" id="lb">EN</button>
+<div class="wrap">
+
+  <div class="appbar">
+    <div class="logo">📊</div>
+    <div>
+      <h1 d-a="محوّل تقارير الدانوب" d-e="Danube Report Converter">محوّل تقارير الدانوب</h1>
+      <p d-a="PDF ← Excel احترافي · ربط ZREP والتصنيف والمخزون" d-e="PDF → professional Excel · ZREP, Category & Stock linking">PDF ← Excel احترافي · ربط ZREP والتصنيف والمخزون</p>
+    </div>
+    <span class="vchip">Vendor 337618 · MARS KSA · v7.2</span>
+  </div>
+
+  <div class="legend">
+    <span><span d-a="🟡 موقع الأصفر = " d-e="🟡 Yellow position = ">🟡 موقع الأصفر = </span><span class="tag y">Danube Article</span> <b d-a="(كود الدانوب)" d-e="(Danube code)">(كود الدانوب)</b></span>
+    <span><span d-a="🟢 موقع الأخضر = " d-e="🟢 Green position = ">🟢 موقع الأخضر = </span><span class="tag g">Mars ZREP</span> <b d-a="(يُقرأ من التقرير لكل صنف)" d-e="(read from report per item)">(يُقرأ من التقرير لكل صنف)</b></span>
+  </div>
+
+  <div class="grid">
+    <div class="card req" id="c-pdf">
+      <div class="ico">📄</div>
+      <h3 d-a="١. ملف PDF — التقرير الكامل" d-e="1. PDF — Full Report">١. ملف PDF — التقرير الكامل</h3>
+      <div class="desc" d-a="SKU Ranking Report — أي حجم، مئات/آلاف الأصناف" d-e="SKU Ranking Report — any size, hundreds/thousands">SKU Ranking Report — أي حجم، مئات/آلاف الأصناف</div>
+      <input type="file" id="f-pdf" class="fin" accept=".pdf" onchange="onFile(this,'pdf')">
+      <button class="btn" onclick="document.getElementById('f-pdf').click()"><span d-a="اختيار PDF" d-e="Select PDF">اختيار PDF</span></button>
+      <div class="st" id="s-pdf"></div>
+    </div>
+    <div class="card" id="c-sku">
+      <div class="ico">📋</div>
+      <h3 d-a="٢. ملف الأصناف (SKUs)" d-e="2. SKUs file">٢. ملف الأصناف (SKUs)</h3>
+      <div class="desc" d-a="تأكيد Category / Brand عبر ZREP — يُحفظ للأبد" d-e="Confirms Category / Brand via ZREP — saved forever">تأكيد Category / Brand عبر ZREP — يُحفظ للأبد</div>
+      <input type="file" id="f-sku" class="fin" accept=".xlsx,.xls,.csv" onchange="onFile(this,'sku')">
+      <div class="rowbtns"><button class="btn sm" onclick="document.getElementById('f-sku').click()"><span d-a="رفع / تحديث" d-e="Upload / Update">رفع / تحديث</span></button>
+      <button class="btn sm ghost" onclick="clearDB('sku')"><span d-a="حذف المحفوظ" d-e="Clear saved">حذف المحفوظ</span></button></div>
+      <div class="st" id="s-sku"></div>
+    </div>
+    <div class="card" id="c-stock">
+      <div class="ico">📦</div>
+      <h3 d-a="٣. ملف المخزون (Stock)" d-e="3. Stock file">٣. ملف المخزون (Stock)</h3>
+      <div class="desc" d-a="ربط الكمية عبر ZREP — يُحفظ للأبد" d-e="Links quantity via ZREP — saved forever">ربط الكمية عبر ZREP — يُحفظ للأبد</div>
+      <input type="file" id="f-stock" class="fin" accept=".xlsx,.xls,.csv" onchange="onFile(this,'stock')">
+      <div class="rowbtns"><button class="btn sm" onclick="document.getElementById('f-stock').click()"><span d-a="رفع / تحديث" d-e="Upload / Update">رفع / تحديث</span></button>
+      <button class="btn sm ghost" onclick="clearDB('stock')"><span d-a="حذف المحفوظ" d-e="Clear saved">حذف المحفوظ</span></button></div>
+      <div class="st" id="s-stock"></div>
+    </div>
+  </div>
+
+  <div class="act">
+    <button class="big" id="runBtn" onclick="run()" disabled><span d-a="🚀 بدء المعالجة" d-e="🚀 Start Processing">🚀 بدء المعالجة</span></button>
+  </div>
+
+  <div class="prog" id="prog">
+    <h2 d-a="⏳ جاري المعالجة..." d-e="⏳ Processing...">⏳ جاري المعالجة...</h2>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+    <div class="logs" id="logs"></div>
+  </div>
+
+  <div class="res" id="res">
+    <h2 d-a="✅ اكتمل التحويل والربط" d-e="✅ Conversion complete">✅ اكتمل التحويل والربط</h2>
+    <div class="info" id="info"></div>
+    <div class="debug" id="debug" style="display:none"><h4>🔍 Reconstructed line sample</h4><pre id="debugText"></pre></div>
+    <div class="stats">
+      <div class="stat"><div class="n" id="n-store">0</div><div class="l" d-a="متاجر" d-e="Stores">متاجر</div></div>
+      <div class="stat"><div class="n" id="n-sku">0</div><div class="l" d-a="منتجات" d-e="SKUs">منتجات</div></div>
+      <div class="stat"><div class="n" id="n-row">0</div><div class="l" d-a="صفوف" d-e="Rows">صفوف</div></div>
+      <div class="stat"><div class="n" id="n-zrep">0</div><div class="l" d-a="ZREP" d-e="ZREP">ZREP</div></div>
+      <div class="stat"><div class="n" id="n-cat">0</div><div class="l" d-a="مُصنّف" d-e="Categorized">مُصنّف</div></div>
+      <div class="stat"><div class="n" id="n-stk">0</div><div class="l" d-a="مخزون" d-e="Stock">مخزون</div></div>
+    </div>
+    <div class="dlg">
+      <button class="dl" onclick="dl('master')"><span d-a="📥 الملف الرئيسي" d-e="📥 Master File">📥 الملف الرئيسي</span></button>
+      <button class="dl b" onclick="dl('store')"><span d-a="📥 ملخص المتاجر" d-e="📥 Store Summary">📥 ملخص المتاجر</span></button>
+      <button class="dl p" onclick="dl('sku')"><span d-a="📥 ملخص المنتجات" d-e="📥 SKU Summary">📥 ملخص المنتجات</span></button>
+      <button class="dl o" onclick="dl('review')"><span d-a="⚠️ مراجعة" d-e="⚠️ Review">⚠️ مراجعة</span></button>
+    </div>
+    <h3 style="margin-top:20px" id="prevHead" d-a="معاينة (أول ٢٠ صف)" d-e="Preview (first 20 rows)">معاينة (أول ٢٠ صف)</h3>
+    <div class="tablewrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+  </div>
+
+  <div class="panel">
+    <h3 d-a="🗄️ إدارة البيانات المحفوظة" d-e="🗄️ Saved data management">🗄️ إدارة البيانات المحفوظة</h3>
+    <p class="hint" d-a="ملف الأصناف وملف المخزون يُحفظان في هذا المتصفح للأبد ويُستعادان تلقائياً عند فتح الأداة." d-e="The SKUs and Stock files are saved in this browser forever and auto-restored on open.">ملف الأصناف وملف المخزون يُحفظان في هذا المتصفح للأبد ويُستعادان تلقائياً عند فتح الأداة.</p>
+    <div class="rowbtns" style="justify-content:flex-start">
+      <button class="btn danger" onclick="clearAll()"><span d-a="🗑️ حذف كل المحفوظ" d-e="🗑️ Clear ALL saved">🗑️ حذف كل المحفوظ</span></button>
+      <span class="st" id="s-clear" style="display:none"></span>
+    </div>
+  </div>
+
+  <footer><p d-a="يعمل ١٠٠٪ داخل المتصفح — لا تُرفع أي بيانات لأي خادم." d-e="100% in-browser — no data leaves your machine.">يعمل ١٠٠٪ داخل المتصفح — لا تُرفع أي بيانات لأي خادم.</p></footer>
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ===== STORE LAYOUT (verified) =====
+const STORES_A=['DNB-Whs','BDS-Whs','Hayat-A','Panoma-A','Hittin-B','Kharj-C','Nakhla-A','Yasmin-B','Talal-B','Irqa-A','Yarmok-C','Aqiq-C','GOasis-B','Waha-C','Badiya-C','Rawabi-B','Ghader-A','Mughar-B','Unaiza-C','Takasu-C'];
+const STORES_B=['Andulu-C','Hail-C','DnbCenWH','Nakhel-C'];
+const STORES=STORES_A.concat(STORES_B);
+
+// ===== BILINGUAL COLUMN DEFINITIONS (num:1 = 0.0 , num:2 = #,##0) =====
+const COLS_FULL=[
+ {k:'Region',en:'Region',ar:'المنطقة'},
+ {k:'Store',en:'Store',ar:'المتجر'},
+ {k:'Danube_Article',en:'Danube Article',ar:'كود الدانوب'},
+ {k:'ZREP',en:'ZREP',ar:'كود مارس'},
+ {k:'Item_Name',en:'Item Name',ar:'اسم الصنف',left:1},
+ {k:'Status',en:'Status',ar:'الحالة'},
+ {k:'Vendor',en:'Vendor',ar:'المورّد'},
+ {k:'Barcode',en:'Barcode',ar:'الباركود'},
+ {k:'Category',en:'Category',ar:'الفئة'},
+ {k:'Brand',en:'Brand',ar:'العلامة'},
+ {k:'Qty_Sold',en:'Qty Sold',ar:'الكمية المباعة',num:1},
+ {k:'On_Hand',en:'On Hand',ar:'المخزون الحالي',num:1},
+ {k:'On_Order',en:'On Order',ar:'في الطريق',num:1},
+ {k:'Stock_Qty',en:'Mars Stock Qty',ar:'مخزون مارس',num:2}
+];
+const COLS_STORE=[
+ {k:'Region',en:'Region',ar:'المنطقة'},{k:'Store',en:'Store',ar:'المتجر'},
+ {k:'Qty_Sold',en:'Qty Sold',ar:'الكمية المباعة',num:1},{k:'On_Hand',en:'On Hand',ar:'المخزون الحالي',num:1},{k:'On_Order',en:'On Order',ar:'في الطريق',num:1}
+];
+const COLS_SKU=[
+ {k:'Danube_Article',en:'Danube Article',ar:'كود الدانوب'},{k:'ZREP',en:'ZREP',ar:'كود مارس'},
+ {k:'Item_Name',en:'Item Name',ar:'اسم الصنف',left:1},{k:'Status',en:'Status',ar:'الحالة'},{k:'Barcode',en:'Barcode',ar:'الباركود'},
+ {k:'Category',en:'Category',ar:'الفئة'},{k:'Brand',en:'Brand',ar:'العلامة'},
+ {k:'Qty_Sold',en:'Qty Sold',ar:'الكمية المباعة',num:1},{k:'On_Hand',en:'On Hand',ar:'المخزون الحالي',num:1},{k:'On_Order',en:'On Order',ar:'في الطريق',num:1},{k:'Stock_Qty',en:'Mars Stock Qty',ar:'مخزون مارس',num:2}
+];
+const COLS_REVIEW=[
+ {k:'Danube_Article',en:'Danube Article',ar:'كود الدانوب'},{k:'ZREP',en:'ZREP',ar:'كود مارس'},
+ {k:'Item_Name',en:'Item Name',ar:'اسم الصنف',left:1},{k:'Category',en:'Category',ar:'الفئة'},{k:'Brand',en:'Brand',ar:'العلامة'},
+ {k:'Issue',en:'Issue',ar:'الملاحظة',left:1}
+];
+const COLS_STOCKCHK=[
+ {k:'Danube_Article',en:'Danube Article',ar:'كود الدانوب'},{k:'ZREP',en:'ZREP',ar:'كود مارس'},
+ {k:'Item_Name',en:'Item Name',ar:'اسم الصنف',left:1},{k:'Mars_Stock_Qty',en:'Mars Stock Qty',ar:'مخزون مارس',num:2},
+ {k:'Stock_Status',en:'Stock Status',ar:'حالة المخزون',left:1},{k:'Match_Key',en:'Match Key',ar:'مفتاح المطابقة'}
+];
+
+// ===== STATE =====
+let L='ar',FILES={pdf:null},SKU_DB=[],STOCK_DB=[],META={},ITEMS=[],ROWS=[],WBS={},REGION='',RAW_LINES=[];
+let SKU_BY_ZREP={},STOCK_BY_ZREP={};
+const HEADER_ARGB='FF1F4E79', ZEBRA_ARGB='FFEDF3FA';
+const BORD={top:{style:'thin',color:{argb:'FFD7DEE6'}},left:{style:'thin',color:{argb:'FFD7DEE6'}},bottom:{style:'thin',color:{argb:'FFD7DEE6'}},right:{style:'thin',color:{argb:'FFD7DEE6'}}};
+
+// ===== PERSISTENCE =====
+const LS={sku:'danube_v7_sku',stock:'danube_v7_stock',meta:'danube_v7_meta'};
+function lsAvailable(){try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true}catch(e){return false}}
+function saveDB(){if(!lsAvailable())return;try{localStorage.setItem(LS.sku,JSON.stringify(SKU_DB));localStorage.setItem(LS.stock,JSON.stringify(STOCK_DB));localStorage.setItem(LS.meta,JSON.stringify(META))}catch(e){console.warn(e)}}
+function loadDB(){if(!lsAvailable())return;try{SKU_DB=JSON.parse(localStorage.getItem(LS.sku)||'[]');STOCK_DB=JSON.parse(localStorage.getItem(LS.stock)||'[]');META=JSON.parse(localStorage.getItem(LS.meta)||'{}')}catch(e){SKU_DB=[];STOCK_DB=[];META={}}}
+function clearDB(type){if(type==='sku'){SKU_DB=[];META.sku=null}else{STOCK_DB=[];META.stock=null}saveDB();refreshSavedStatus();checkReady()}
+function clearAll(){SKU_DB=[];STOCK_DB=[];META={};if(lsAvailable()){localStorage.removeItem(LS.sku);localStorage.removeItem(LS.stock);localStorage.removeItem(LS.meta)}refreshSavedStatus();checkReady();const s=document.getElementById('s-clear');s.className='st ok';s.style.display='inline-block';s.textContent=L==='ar'?'✅ تم حذف كل البيانات المحفوظة':'✅ All saved data cleared'}
+
+// ===== LANGUAGE =====
+function togLang(){L=L==='ar'?'en':'ar';document.getElementById('lb').textContent=L==='ar'?'EN':'AR';document.documentElement.lang=L;document.documentElement.dir=L==='ar'?'rtl':'ltr';document.querySelectorAll('[d-a][d-e]').forEach(el=>el.textContent=el.getAttribute('d-'+(L==='ar'?'a':'e')));refreshSavedStatus()}
+
+// ===== FILE HANDLING =====
+function onFile(input,type){const f=input.files[0];if(!f)return;if(type==='pdf'){FILES.pdf=f;const st=document.getElementById('s-pdf');st.className='st ok';st.textContent=(L==='ar'?'✅ تم التحميل: ':'✅ Loaded: ')+f.name+' ('+(f.size/1024).toFixed(1)+' KB)';document.getElementById('c-pdf').classList.add('on');checkReady();return}if(type==='sku')readSKU(f);if(type==='stock')readStock(f)}
+function checkReady(){document.getElementById('runBtn').disabled=!FILES.pdf}
+function refreshSavedStatus(){const map=[['sku',SKU_DB,'c-sku','s-sku'],['stock',STOCK_DB,'c-stock','s-stock']];for(const row of map){const k=row[0],db=row[1],card=document.getElementById(row[2]),st=document.getElementById(row[3]);if(db&&db.length){card.classList.add('saved');const meta=META[k]||{};st.className='st info';st.textContent=(L==='ar'?'💾 محفوظ: ':'💾 Saved: ')+db.length+(L==='ar'?' سطر':' rows')+(meta.name?' — '+meta.name:'')+(meta.date?' — '+meta.date:'')}else{card.classList.remove('saved');st.className='st';st.textContent='';st.style.display='none'}}}
+
+// ===== READERS =====
+function normCode(s){return String(s||'').trim().replace(/\s/g,'')}
+function normLoose(s){return normCode(s).replace(/^0+/,'').replace(/\./g,'')}
+async function readSKU(file){log(L==='ar'?'قراءة ملف الأصناف...':'Reading SKUs...','i');try{const data=await file.arrayBuffer();const wb=XLSX.read(data,{type:'array'});const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1});let hIdx=0;for(let i=0;i<Math.min(6,json.length);i++){const r=(json[i]||[]).map(c=>String(c||'').trim().toLowerCase());if(r.some(x=>/zrep|article|description|category/.test(x))){hIdx=i;break}}const h=(json[hIdx]||[]).map(x=>String(x||'').trim());const zi=h.findIndex(x=>/zrep/i.test(x));const ai=h.findIndex(x=>/article|material|sku/i.test(x));const di=h.findIndex(x=>/description/i.test(x));const ci=h.findIndex(x=>/category/i.test(x));const bi=h.findIndex(x=>/brand/i.test(x));SKU_DB=[];for(let i=hIdx+1;i<json.length;i++){const r=json[i];if(!r||!r.length)continue;const z=zi>=0?normCode(r[zi]):'';const a=ai>=0?normCode(r[ai]):'';if(!z&&!a)continue;SKU_DB.push({zrep:z,article:a,desc:di>=0?String(r[di]||'').trim():'',cat:ci>=0?String(r[ci]||'').trim():'',brand:bi>=0?String(r[bi]||'').trim():''})}META.sku={name:file.name,date:new Date().toISOString().split('T')[0]};saveDB();refreshSavedStatus();log('✅ '+(L==='ar'?'الأصناف: ':'SKUs: ')+SKU_DB.length,'s');toast((L==='ar'?'✅ تم تحديث ملف الأصناف — ':'✅ SKUs file updated — ')+SKU_DB.length+(L==='ar'?' صنف':' items'),'ok')}catch(e){log('SKU Error: '+e.message,'e');toast((L==='ar'?'⚠️ خطأ في ملف الأصناف: ':'⚠️ SKUs error: ')+e.message,'err')}}
+async function readStock(file){log(L==='ar'?'قراءة المخزون...':'Reading Stock...','i');try{const data=await file.arrayBuffer();let wb;if(file.name.toLowerCase().endsWith('.csv')){const txt=new TextDecoder('utf-8').decode(data);wb=XLSX.read(txt,{type:'string',codepage:65001})}else{wb=XLSX.read(data,{type:'array'})}const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1});let hIdx=0;for(let i=0;i<Math.min(6,json.length);i++){const r=(json[i]||[]).map(c=>String(c||'').trim().toLowerCase());if(r.some(x=>/material|zrep|unrestric|stock|qty/.test(x))){hIdx=i;break}}const h=(json[hIdx]||[]).map(x=>String(x||'').trim());const mi=h.findIndex(x=>/material|article/i.test(x));const zi=h.findIndex(x=>/zrep/i.test(x));const di=h.findIndex(x=>/description/i.test(x));const qi=h.findIndex(x=>/unrestric|stock|qty|quantity|on hand|keyacc/i.test(x));STOCK_DB=[];for(let i=hIdx+1;i<json.length;i++){const r=json[i];if(!r||!r.length)continue;const m=mi>=0?normCode(r[mi]):'';const z=zi>=0?normCode(r[zi]):'';if(!m&&!z)continue;STOCK_DB.push({material:m,zrep:z,desc:di>=0?String(r[di]||'').trim():'',qty:qi>=0?(parseFloat(r[qi])||0):0})}META.stock={name:file.name,date:new Date().toISOString().split('T')[0]};saveDB();refreshSavedStatus();log('✅ '+(L==='ar'?'المخزون: ':'Stock: ')+STOCK_DB.length,'s');toast((L==='ar'?'✅ تم تحديث ملف المخزون — ':'✅ Stock file updated — ')+STOCK_DB.length+(L==='ar'?' سطر':' rows'),'ok')}catch(e){log('Stock Error: '+e.message,'e');toast((L==='ar'?'⚠️ خطأ في ملف المخزون: ':'⚠️ Stock error: ')+e.message,'err')}}
+
+// ===== PDF LINE RECONSTRUCTION =====
+function reconstructLines(tc){const buckets=[];for(const it of tc.items){if(!it.str||!it.str.trim())continue;const y=it.transform[5],x=it.transform[4];let b=null;for(const k of buckets){if(Math.abs(k.y-y)<=2.2){b=k;break}}if(!b){b={y:y,items:[]};buckets.push(b)}b.items.push({x:x,s:it.str})}buckets.sort((a,b)=>b.y-a.y);return buckets.map(b=>b.items.sort((a,b)=>a.x-b.x).map(o=>o.s).join(' ').replace(/\s+/g,' ').trim())}
+
+// ===== PARSER =====
+const HDR=/^(\d{3,10})\s+(.+?)\s*\((ACTIVE|INACTIVE)\)\s*(?:\(\s*S80\s*\))?\s*Item:\s*([\d.]*)(?:\s+Vendor:\s*(\d+))?/i;
+const NUMTOK=/^-?\d*\.?\d+-?$/;
+function stripPipes(l){return String(l).replace(/^\s*\|/,'').replace(/\|\s*$/,'').trim()}
+function isDataRow(l){const t=stripPipes(l).split(/\s+/).filter(Boolean);if(!t.length)return false;let nn=0;for(const x of t)if(NUMTOK.test(x))nn++;return nn>=15&&nn/t.length>0.8}
+function pnum(t){const neg=t.endsWith('-');t=t.replace(/-/g,'');const v=parseFloat(t);return isNaN(v)?0:(neg?-v:v)}
+function dataNums(l){return stripPipes(l).split(/\s+/).filter(x=>NUMTOK.test(x)).map(pnum)}
+function parseAll(lines){const items=[];for(const l of lines){const r=l.match(/Region:\s*([0-9]{0,4}\s*[A-Za-z][A-Za-z ]+Region)/);if(r){REGION=r[1].trim();break}}
+for(let i=0;i<lines.length;i++){const m=stripPipes(lines[i]).match(HDR);if(!m)continue;
+const it={article:m[1].trim(),name:m[2].trim().replace(/\s+/g,' '),status:m[3].toUpperCase(),zrep:(m[4]||'').trim(),vendor:(m[5]||'337618').trim(),barcode:'',category:'',brand:'',catSrc:'',stockQty:0,stockMatch:false,incomplete:false,qtySold:[],onHand:[],onOrder:[]};
+const bc=lines[i].match(/Barcode:\s*(\d+)/i);if(bc)it.barcode=bc[1];
+const rows=[];let j=i+1;while(j<lines.length&&rows.length<6){if(stripPipes(lines[j]).match(HDR))break;if(isDataRow(lines[j]))rows.push(dataNums(lines[j]));j++}
+const A=k=>{const r=rows[k]||[];const o=r.slice(0,20);while(o.length<20)o.push(0);return o};const B=k=>{const r=rows[k]||[];const o=r.slice(0,4);while(o.length<4)o.push(0);return o};
+if(rows.length<6)it.incomplete=true;it.qtySold=A(0).concat(B(3));it.onHand=A(1).concat(B(4));it.onOrder=A(2).concat(B(5));
+deriveCatBrand(it);items.push(it);i=j-1}return items}
+
+// ===== CATEGORY / BRAND from name =====
+const BRAND_RULES=[[/MALTESERS?/,'Maltesers','Chocolate'],[/BOUNTY/,'Bounty','Chocolate'],[/TWIX/,'Twix','Chocolate'],[/SNICKERS?/,'Snickers','Chocolate'],[/GALAXY/,'Galaxy','Chocolate'],[/M&\s?M|M&MS|\bMMS?\b/,'M&Ms','Chocolate'],[/MILKY\s?WAY/,'Milky Way','Chocolate'],[/SKITTLES/,'Skittles','Fruity Confections'],[/STARBURST/,'Starburst','Fruity Confections'],[/EXTRA/,'Extra','Gum'],[/AIRWAVES?/,'Airwaves','Gum'],[/\bFIVE\b/,'Five','Gum'],[/DOUBLEMINT/,'Doublemint','Gum'],[/ORBIT/,'Orbit','Gum'],[/WRIGL[EY]*S?|WRIGLY?S?/,'Wrigley','Gum'],[/WHISKAS/,'Whiskas','Petcare'],[/SHEBA/,'Sheba','Petcare'],[/PEDIGREE/,'Pedigree','Petcare'],[/CESAR/,'Cesar','Petcare'],[/CATSAN/,'Catsan','Petcare'],[/KITEKAT/,'Kitekat','Petcare'],[/THOMAS/,'Thomas','Petcare'],[/\bKIND\b/,'KIND','BE KIND'],[/\bMARS\b/,'Mars','Chocolate']];
+const CAT_RULES=[[/ICE\s?CR|I[\/\.\- ]?CRM|\bICRM\b|ICE\s?BAR|\bCONE\b|I-CRM/,'Ice Cream'],[/\bGUM\b/,'Gum'],[/\bCAKE\b/,'Cake'],[/CHOCOLATE|CHCLT|CHCO|CHOCO|\bCHOC\b|CHO\.|\bCHC\b/,'Chocolate'],[/MINIATUR|\bMINIS\b|BEST OF/,'Chocolate']];
+function deriveCatBrand(it){const up=it.name.toUpperCase();let bc='';for(const r of BRAND_RULES){if(r[0].test(up)){it.brand=r[1];bc=r[2];break}}let cat='';for(const r of CAT_RULES){if(r[0].test(up)){cat=r[1];break}}it.category=cat||bc||'';it.catSrc=it.category?'name':''}
+
+// ===== LINKING by ZREP =====
+function addKey(idx,k,v){if(k&&!(k in idx))idx[k]=v}
+function buildIndexes(){SKU_BY_ZREP={};for(const s of SKU_DB){addKey(SKU_BY_ZREP,s.zrep,s);addKey(SKU_BY_ZREP,normLoose(s.zrep),s)}STOCK_BY_ZREP={};for(const s of STOCK_DB){addKey(STOCK_BY_ZREP,s.zrep,s);addKey(STOCK_BY_ZREP,normLoose(s.zrep),s);addKey(STOCK_BY_ZREP,s.material,s);addKey(STOCK_BY_ZREP,normLoose(s.material),s)}}
+function lookupStock(it){const keys=[['zrep',it.zrep],['zrep~',normLoose(it.zrep)],['article',it.article],['article~',normLoose(it.article)]];for(const kv of keys){if(kv[1]&&STOCK_BY_ZREP[kv[1]])return{row:STOCK_BY_ZREP[kv[1]],key:kv[0]}}return null}
+function linkAll(){buildIndexes();let zl=0,sl=0,cat=0,cm=0;for(const it of ITEMS){if(it.zrep)zl++;const s=SKU_BY_ZREP[it.zrep]||SKU_BY_ZREP[normLoose(it.zrep)];if(s){if(s.cat){it.category=s.cat;it.catSrc='file'}if(s.brand)it.brand=s.brand;cm++}if(it.category)cat++;const m=lookupStock(it);if(m){it.stockQty=m.row.qty;it.stockMatch=true;it.stockKey=m.key;sl++}else{it.stockKey=''}}return{zl,sl,cat,cm}}
+
+// ===== BUILD ROWS =====
+function round1(v){return Math.round((v||0)*10)/10}
+function blank0(v){return(v===0||v===null||v===undefined||v==='')?null:v}
+function sum(a){let t=0;for(const x of a)t+=(x||0);return t}
+function buildRows(){const rows=[];for(const it of ITEMS){for(let i=0;i<STORES.length;i++){rows.push({Region:REGION||'',Store:STORES[i],Danube_Article:it.article,ZREP:it.zrep,Item_Name:it.name,Status:it.status,Vendor:it.vendor,Barcode:it.barcode,Category:it.category||'',Brand:it.brand||'',Qty_Sold:blank0(round1(it.qtySold[i])),On_Hand:blank0(round1(it.onHand[i])),On_Order:blank0(round1(it.onOrder[i])),Stock_Qty:blank0(it.stockQty||0)})}}return rows}
+
+// ===== EXCEL (ExcelJS — styled) =====
+function buildExcel(sheets){
+ const wb=new ExcelJS.Workbook();wb.creator='Danube Converter v7';
+ for(const sh of sheets){
+   const ws=wb.addWorksheet(sh.name,{views:[{state:'frozen',ySplit:1}]});
+   ws.columns=sh.cols.map(c=>({header:c.en+'\n('+c.ar+')',key:c.k,style:{alignment:{vertical:'middle',horizontal:c.left?'left':'center'},numFmt:c.num===2?'#,##0':(c.num?'0.0':undefined)}}));
+   for(const r of sh.rows)ws.addRow(r);
+   const hr=ws.getRow(1);hr.height=34;
+   hr.eachCell(function(cell){cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:HEADER_ARGB}};cell.font={name:'Calibri',bold:true,size:11,color:{argb:'FFFFFFFF'}};cell.alignment={vertical:'middle',horizontal:'center',wrapText:true};cell.border=BORD});
+   // auto-fit widths
+   sh.cols.forEach(function(c,idx){let max=Math.max(c.en.length,c.ar.length+2);for(const r of sh.rows){const v=r[c.k];if(v!=null){const len=String(v).length;if(len>max)max=len}}ws.getColumn(idx+1).width=Math.min(Math.max(max+2,10),46)});
+   // borders + zebra (guarded for very large sheets)
+   if(sh.rows.length<=30000){const ncol=sh.cols.length;for(let i=2;i<=ws.rowCount;i++){const row=ws.getRow(i);const zeb=(i%2===1);for(let col=1;col<=ncol;col++){const cell=row.getCell(col);cell.border=BORD;if(zeb)cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:ZEBRA_ARGB}}}}}
+   ws.autoFilter={from:{row:1,column:1},to:{row:1,column:sh.cols.length}};
+ }
+ return wb;
+}
+function buildWB(){
+ const full={name:'Full Data',cols:COLS_FULL,rows:ROWS};
+ const ss={};for(const r of ROWS){if(!ss[r.Store])ss[r.Store]={Region:r.Region,Store:r.Store,Qty_Sold:0,On_Hand:0,On_Order:0};ss[r.Store].Qty_Sold+=r.Qty_Sold;ss[r.Store].On_Hand+=r.On_Hand;ss[r.Store].On_Order+=r.On_Order}
+ const storeRows=Object.values(ss).map(v=>({Region:v.Region,Store:v.Store,Qty_Sold:blank0(round1(v.Qty_Sold)),On_Hand:blank0(round1(v.On_Hand)),On_Order:blank0(round1(v.On_Order))}));
+ const store={name:'Store Summary',cols:COLS_STORE,rows:storeRows};
+ const skuRows=ITEMS.map(it=>({Danube_Article:it.article,ZREP:it.zrep,Item_Name:it.name,Status:it.status,Barcode:it.barcode,Category:it.category,Brand:it.brand,Qty_Sold:blank0(round1(sum(it.qtySold))),On_Hand:blank0(round1(sum(it.onHand))),On_Order:blank0(round1(sum(it.onOrder))),Stock_Qty:blank0(it.stockQty||0)}));
+ const sku={name:'SKU Summary',cols:COLS_SKU,rows:skuRows};
+ const revRows=ITEMS.filter(i=>!i.zrep||/\./.test(i.zrep)||i.incomplete).map(i=>({Danube_Article:i.article,ZREP:i.zrep||'(missing)',Item_Name:i.name,Category:i.category,Brand:i.brand,Issue:!i.zrep?'No ZREP':(/\./.test(i.zrep)?'Unusual ZREP format':'Partial data')}));
+ const review={name:'Review',cols:COLS_REVIEW,rows:revRows.length?revRows:[{Danube_Article:'',ZREP:'',Item_Name:L==='ar'?'لا توجد عناصر تحتاج مراجعة':'No items need review',Category:'',Brand:'',Issue:''}]};
+ const chkRows=ITEMS.map(it=>({Danube_Article:it.article,ZREP:it.zrep,Item_Name:it.name,Mars_Stock_Qty:it.stockMatch?(it.stockQty||0):null,Stock_Status:it.stockMatch?(L==='ar'?'موجود':'Found'):(L==='ar'?'غير موجود في ملف المخزون':'Not in stock file'),Match_Key:it.stockKey||''}));
+ const stockchk={name:'Stock Check',cols:COLS_STOCKCHK,rows:chkRows};
+ WBS.master=buildExcel([full,store,sku,review,stockchk]);
+ WBS.store=buildExcel([store]);WBS.sku=buildExcel([sku]);WBS.review=buildExcel([review,stockchk]);
+}
+
+// ===== MAIN =====
+async function run(){if(!FILES.pdf)return;document.getElementById('prog').style.display='block';document.getElementById('res').style.display='none';document.getElementById('logs').innerHTML='';setProg(0);REGION='';
+ try{
+  log(L==='ar'?'قراءة ملف PDF...':'Reading PDF...','i');const data=await FILES.pdf.arrayBuffer();setProg(4);
+  const pdf=await pdfjsLib.getDocument({data}).promise;const n=pdf.numPages;log((L==='ar'?'الصفحات: ':'Pages: ')+n,'i');setProg(8);
+  RAW_LINES=[];for(let i=1;i<=n;i++){const page=await pdf.getPage(i);const tc=await page.getTextContent();RAW_LINES=RAW_LINES.concat(reconstructLines(tc));setProg(8+Math.floor((i/n)*40));if(i%10===0||i===n)log((L==='ar'?'صفحة ':'Page ')+i+'/'+n,'i')}
+  log((L==='ar'?'أسطر مُعاد بناؤها: ':'Lines: ')+RAW_LINES.length,'s');setProg(50);
+  log(L==='ar'?'تحليل كل المنتجات...':'Parsing ALL items...','i');ITEMS=parseAll(RAW_LINES);setProg(66);
+  log('✅ '+(L==='ar'?'منتجات: ':'Items: ')+ITEMS.length,'s');
+  log(L==='ar'?'ربط ZREP / التصنيف / المخزون...':'Linking...','i');const res=linkAll();setProg(80);
+  log('✅ ZREP '+res.zl+' | SKU '+res.cm+' | Cat '+res.cat+' | Stock '+res.sl,'s');
+  ROWS=buildRows();setProg(88);log(L==='ar'?'إنشاء Excel احترافي...':'Building styled Excel...','i');buildWB();setProg(100);log('✅ Done!','s');
+  setTimeout(()=>{document.getElementById('prog').style.display='none';showRes(res)},500);
+ }catch(err){log('❌ Error: '+err.message,'e');console.error(err)}
+}
+
+// ===== UI =====
+function showRes(res){
+ document.getElementById('res').style.display='block';
+ document.getElementById('n-store').textContent=STORES.length;document.getElementById('n-sku').textContent=ITEMS.length;
+ document.getElementById('n-row').textContent=ROWS.length.toLocaleString();document.getElementById('n-zrep').textContent=res.zl;
+ document.getElementById('n-cat').textContent=res.cat;document.getElementById('n-stk').textContent=res.sl;
+ const hs=SKU_DB.length>0,ht=STOCK_DB.length>0;
+ document.getElementById('info').innerHTML=(L==='ar'
+  ?`<h4>📊 نتائج الربط</h4><ul><li>المنطقة: ${REGION||'—'}</li><li>منتجات مقروءة من كل الـ PDF: ${ITEMS.length}</li><li>ZREP من التقرير: ${res.zl}/${ITEMS.length}</li><li>تأكيد من ملف الأصناف: ${res.cm}${hs?'':' (لم يُرفع)'}</li><li>مُصنّف: ${res.cat}/${ITEMS.length}</li><li>مربوط بمخزون مارس: ${res.sl}/${ITEMS.length}${ht?` · غير موجود بالمخزون: ${ITEMS.length-res.sl}`:' (لم يُرفع ملف المخزون)'}</li><li>راجع ورقة <b>Stock Check</b> لمعرفة حالة مخزون كل صنف</li><li>متاجر: ${STORES.length} · صفوف: ${ROWS.length.toLocaleString()}</li></ul>`
+  :`<h4>📊 Results</h4><ul><li>Region: ${REGION||'—'}</li><li>Items read from entire PDF: ${ITEMS.length}</li><li>ZREP from report: ${res.zl}/${ITEMS.length}</li><li>SKU-file confirmed: ${res.cm}${hs?'':' (not uploaded)'}</li><li>Categorized: ${res.cat}/${ITEMS.length}</li><li>Mars stock linked: ${res.sl}/${ITEMS.length}${ht?` · not in stock file: ${ITEMS.length-res.sl}`:' (stock not uploaded)'}</li><li>See the <b>Stock Check</b> sheet for each item's stock status</li><li>Stores: ${STORES.length} · Rows: ${ROWS.length.toLocaleString()}</li></ul>`);
+ if(ITEMS.length<5){document.getElementById('debug').style.display='block';document.getElementById('debugText').textContent=RAW_LINES.slice(0,40).join('\n')}else{document.getElementById('debug').style.display='none'}
+ const tbl=document.getElementById('tbl');
+ tbl.querySelector('thead').innerHTML='<tr>'+COLS_FULL.map(c=>'<th><div class="hen">'+c.en+'</div><div class="har">'+c.ar+'</div></th>').join('')+'</tr>';
+ tbl.querySelector('tbody').innerHTML=ROWS.slice(0,20).map(r=>'<tr>'+COLS_FULL.map(c=>{const v=r[c.k];return '<td>'+(v==null||v===''?'':v)+'</td>'}).join('')+'</tr>').join('');
+}
+async function dl(type){const wb=WBS[type];if(!wb)return;try{const buf=await wb.xlsx.writeBuffer();const d=new Date().toISOString().split('T')[0];const names={master:'Danube_Master_'+d+'.xlsx',store:'Danube_Store_'+d+'.xlsx',sku:'Danube_SKU_'+d+'.xlsx',review:'Danube_Review_'+d+'.xlsx'};saveAs(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),names[type])}catch(e){log('Export error: '+e.message,'e')}}
+
+// ===== UTILS =====
+function log(msg,type){const d=document.createElement('div');d.className=type;d.textContent='['+new Date().toLocaleTimeString()+'] '+msg;const l=document.getElementById('logs');l.appendChild(d);l.scrollTop=l.scrollHeight}
+function toast(msg,kind){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(kind||'ok');clearTimeout(t._h);t._h=setTimeout(()=>{t.className='toast '+(kind||'ok')},3600)}
+function setProg(p){document.getElementById('fill').style.width=p+'%'}
+['pdf','sku','stock'].forEach(t=>{const c=document.getElementById('c-'+t);c.addEventListener('dragover',e=>{e.preventDefault();c.classList.add('on')});c.addEventListener('dragleave',()=>c.classList.remove('on'));c.addEventListener('drop',e=>{e.preventDefault();c.classList.remove('on');const fs=e.dataTransfer.files;if(fs.length>0){const inEl=document.getElementById('f-'+t);const dt=new DataTransfer();dt.items.add(fs[0]);inEl.files=dt.files;onFile(inEl,t)}})});
+
+// ===== INIT =====
+loadDB();refreshSavedStatus();checkReady();
+if(!lsAvailable()){const s=document.getElementById('s-clear');s.className='st warn';s.style.display='inline-block';s.textContent=L==='ar'?'⚠️ الحفظ الدائم لا يعمل داخل المعاينة — افتح الملف مباشرةً في المتصفح':'⚠️ Persistent storage off in preview — open the file directly in a browser'}
+</script>
+</body>
+</html>
