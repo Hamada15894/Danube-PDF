@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,7 +121,7 @@ footer{text-align:center;padding:26px;color:#5d6f82;font-size:.85em}
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<button class="lang" onclick="togLang()" id="lb">EN</button>
+<button class="lang" onclick="togLang()" id="lb">AR</button>
 <div class="wrap">
 
   <div class="appbar">
@@ -130,7 +130,7 @@ footer{text-align:center;padding:26px;color:#5d6f82;font-size:.85em}
       <h1 d-a="محوّل تقارير الدانوب" d-e="Danube Report Converter">محوّل تقارير الدانوب</h1>
       <p d-a="PDF ← Excel احترافي · ربط ZREP والتصنيف والمخزون" d-e="PDF → professional Excel · ZREP, Category & Stock linking">PDF ← Excel احترافي · ربط ZREP والتصنيف والمخزون</p>
     </div>
-    <span class="vchip">Vendor 337618 · MARS KSA · v7.2</span>
+    <span class="vchip">Vendor 337618 · MARS KSA · v8.2</span>
   </div>
 
   <div class="legend">
@@ -149,8 +149,8 @@ footer{text-align:center;padding:26px;color:#5d6f82;font-size:.85em}
     </div>
     <div class="card" id="c-sku">
       <div class="ico">📋</div>
-      <h3 d-a="٢. ملف الأصناف (SKUs)" d-e="2. SKUs file">٢. ملف الأصناف (SKUs)</h3>
-      <div class="desc" d-a="تأكيد Category / Brand عبر ZREP — يُحفظ للأبد" d-e="Confirms Category / Brand via ZREP — saved forever">تأكيد Category / Brand عبر ZREP — يُحفظ للأبد</div>
+      <h3 d-a="٢. ملف الأصناف / الماستر (SKUs)" d-e="2. SKUs / Master file">٢. ملف الأصناف / الماستر (SKUs)</h3>
+      <div class="desc" d-a="يصحّح ZREP عبر Article No + يؤكّد الفئة/العلامة — يُحفظ للأبد" d-e="Corrects ZREP via Article No + confirms Category/Brand — saved forever">يصحّح ZREP عبر Article No + يؤكّد الفئة/العلامة — يُحفظ للأبد</div>
       <input type="file" id="f-sku" class="fin" accept=".xlsx,.xls,.csv" onchange="onFile(this,'sku')">
       <div class="rowbtns"><button class="btn sm" onclick="document.getElementById('f-sku').click()"><span d-a="رفع / تحديث" d-e="Upload / Update">رفع / تحديث</span></button>
       <button class="btn sm ghost" onclick="clearDB('sku')"><span d-a="حذف المحفوظ" d-e="Clear saved">حذف المحفوظ</span></button></div>
@@ -164,6 +164,15 @@ footer{text-align:center;padding:26px;color:#5d6f82;font-size:.85em}
       <div class="rowbtns"><button class="btn sm" onclick="document.getElementById('f-stock').click()"><span d-a="رفع / تحديث" d-e="Upload / Update">رفع / تحديث</span></button>
       <button class="btn sm ghost" onclick="clearDB('stock')"><span d-a="حذف المحفوظ" d-e="Clear saved">حذف المحفوظ</span></button></div>
       <div class="st" id="s-stock"></div>
+    </div>
+    <div class="card" id="c-price">
+      <div class="ico">💰</div>
+      <h3 d-a="٤. ملف الأسعار (Pricing)" d-e="4. Pricing file">٤. ملف الأسعار (Pricing)</h3>
+      <div class="desc" d-a="ربط السعر عبر ZREP لحساب قيمة مخزون الدانوب — يُحفظ للأبد" d-e="Links price via ZREP to value Danube stock — saved forever">ربط السعر عبر ZREP لحساب قيمة مخزون الدانوب — يُحفظ للأبد</div>
+      <input type="file" id="f-price" class="fin" accept=".xlsx,.xls,.csv" onchange="onFile(this,'price')">
+      <div class="rowbtns"><button class="btn sm" onclick="document.getElementById('f-price').click()"><span d-a="رفع / تحديث" d-e="Upload / Update">رفع / تحديث</span></button>
+      <button class="btn sm ghost" onclick="clearDB('price')"><span d-a="حذف المحفوظ" d-e="Clear saved">حذف المحفوظ</span></button></div>
+      <div class="st" id="s-price"></div>
     </div>
   </div>
 
@@ -188,6 +197,8 @@ footer{text-align:center;padding:26px;color:#5d6f82;font-size:.85em}
       <div class="stat"><div class="n" id="n-zrep">0</div><div class="l" d-a="ZREP" d-e="ZREP">ZREP</div></div>
       <div class="stat"><div class="n" id="n-cat">0</div><div class="l" d-a="مُصنّف" d-e="Categorized">مُصنّف</div></div>
       <div class="stat"><div class="n" id="n-stk">0</div><div class="l" d-a="مخزون" d-e="Stock">مخزون</div></div>
+      <div class="stat"><div class="n" id="n-prc">0</div><div class="l" d-a="مُسعّر" d-e="Priced">مُسعّر</div></div>
+      <div class="stat"><div class="n" id="n-val">0</div><div class="l" d-a="قيمة مخزون الدانوب" d-e="Danube Stock Value">قيمة مخزون الدانوب</div></div>
     </div>
     <div class="dlg">
       <button class="dl" onclick="dl('master')"><span d-a="📥 الملف الرئيسي" d-e="📥 Master File">📥 الملف الرئيسي</span></button>
@@ -197,6 +208,15 @@ footer{text-align:center;padding:26px;color:#5d6f82;font-size:.85em}
     </div>
     <h3 style="margin-top:20px" id="prevHead" d-a="معاينة (أول ٢٠ صف)" d-e="Preview (first 20 rows)">معاينة (أول ٢٠ صف)</h3>
     <div class="tablewrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+    <div class="panel" id="zfixPanel" style="margin-top:22px;display:none">
+      <h3 d-a="🔧 تصحيح أكواد ZREP" d-e="🔧 Fix ZREP codes">🔧 تصحيح أكواد ZREP</h3>
+      <p class="hint" id="zfixHint"></p>
+      <div class="tablewrap" style="max-height:380px"><table><thead id="zfixHead"></thead><tbody id="zfixBody"></tbody></table></div>
+      <div class="rowbtns" style="justify-content:flex-start;margin-top:14px">
+        <button class="btn" onclick="applyZFix()"><span d-a="✅ تطبيق وإعادة الحساب" d-e="✅ Apply & Recalculate">✅ تطبيق وإعادة الحساب</span></button>
+        <button class="btn ghost" onclick="clearZFix()"><span d-a="حذف كل التصحيحات" d-e="Clear all fixes">حذف كل التصحيحات</span></button>
+      </div>
+    </div>
   </div>
 
   <div class="panel">
@@ -234,17 +254,21 @@ const COLS_FULL=[
  {k:'Qty_Sold',en:'Qty Sold',ar:'الكمية المباعة',num:1},
  {k:'On_Hand',en:'On Hand',ar:'المخزون الحالي',num:1},
  {k:'On_Order',en:'On Order',ar:'في الطريق',num:1},
- {k:'Stock_Qty',en:'Mars Stock Qty',ar:'مخزون مارس',num:2}
+ {k:'Stock_Qty',en:'Mars Stock Qty',ar:'مخزون مارس',num:2},
+ {k:'Price',en:'Price (SAR)',ar:'السعر (ريال)',num:3},
+ {k:'Danube_Stock_Value',en:'Danube Stock Value',ar:'قيمة مخزون الدانوب',num:3}
 ];
 const COLS_STORE=[
  {k:'Region',en:'Region',ar:'المنطقة'},{k:'Store',en:'Store',ar:'المتجر'},
- {k:'Qty_Sold',en:'Qty Sold',ar:'الكمية المباعة',num:1},{k:'On_Hand',en:'On Hand',ar:'المخزون الحالي',num:1},{k:'On_Order',en:'On Order',ar:'في الطريق',num:1}
+ {k:'Qty_Sold',en:'Qty Sold',ar:'الكمية المباعة',num:1},{k:'On_Hand',en:'On Hand',ar:'المخزون الحالي',num:1},{k:'On_Order',en:'On Order',ar:'في الطريق',num:1},
+ {k:'Danube_Stock_Value',en:'Danube Stock Value',ar:'قيمة مخزون الدانوب',num:3}
 ];
 const COLS_SKU=[
  {k:'Danube_Article',en:'Danube Article',ar:'كود الدانوب'},{k:'ZREP',en:'ZREP',ar:'كود مارس'},
  {k:'Item_Name',en:'Item Name',ar:'اسم الصنف',left:1},{k:'Status',en:'Status',ar:'الحالة'},{k:'Barcode',en:'Barcode',ar:'الباركود'},
  {k:'Category',en:'Category',ar:'الفئة'},{k:'Brand',en:'Brand',ar:'العلامة'},
- {k:'Qty_Sold',en:'Qty Sold',ar:'الكمية المباعة',num:1},{k:'On_Hand',en:'On Hand',ar:'المخزون الحالي',num:1},{k:'On_Order',en:'On Order',ar:'في الطريق',num:1},{k:'Stock_Qty',en:'Mars Stock Qty',ar:'مخزون مارس',num:2}
+ {k:'Qty_Sold',en:'Qty Sold',ar:'الكمية المباعة',num:1},{k:'On_Hand',en:'On Hand',ar:'المخزون الحالي',num:1},{k:'On_Order',en:'On Order',ar:'في الطريق',num:1},{k:'Stock_Qty',en:'Mars Stock Qty',ar:'مخزون مارس',num:2},
+ {k:'Price',en:'Price (SAR)',ar:'السعر (ريال)',num:3},{k:'Danube_Stock_Value',en:'Danube Stock Value',ar:'قيمة مخزون الدانوب',num:3}
 ];
 const COLS_REVIEW=[
  {k:'Danube_Article',en:'Danube Article',ar:'كود الدانوب'},{k:'ZREP',en:'ZREP',ar:'كود مارس'},
@@ -258,32 +282,35 @@ const COLS_STOCKCHK=[
 ];
 
 // ===== STATE =====
-let L='ar',FILES={pdf:null},SKU_DB=[],STOCK_DB=[],META={},ITEMS=[],ROWS=[],WBS={},REGION='',RAW_LINES=[];
-let SKU_BY_ZREP={},STOCK_BY_ZREP={};
+let L='en',FILES={pdf:null},SKU_DB=[],STOCK_DB=[],PRICE_DB=[],ZFIX={},META={},ITEMS=[],ROWS=[],WBS={},REGION='',RAW_LINES=[];
+let SKU_BY_ZREP={},SKU_BY_ARTICLE={},SKU_BY_ARTPREFIX={},STOCK_BY_ZREP={},PRICE_BY_ZREP={};
 const HEADER_ARGB='FF1F4E79', ZEBRA_ARGB='FFEDF3FA';
 const BORD={top:{style:'thin',color:{argb:'FFD7DEE6'}},left:{style:'thin',color:{argb:'FFD7DEE6'}},bottom:{style:'thin',color:{argb:'FFD7DEE6'}},right:{style:'thin',color:{argb:'FFD7DEE6'}}};
 
 // ===== PERSISTENCE =====
-const LS={sku:'danube_v7_sku',stock:'danube_v7_stock',meta:'danube_v7_meta'};
+const LS={sku:'danube_v7_sku',stock:'danube_v7_stock',price:'danube_v7_price',zfix:'danube_v7_zfix',meta:'danube_v7_meta'};
 function lsAvailable(){try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true}catch(e){return false}}
-function saveDB(){if(!lsAvailable())return;try{localStorage.setItem(LS.sku,JSON.stringify(SKU_DB));localStorage.setItem(LS.stock,JSON.stringify(STOCK_DB));localStorage.setItem(LS.meta,JSON.stringify(META))}catch(e){console.warn(e)}}
-function loadDB(){if(!lsAvailable())return;try{SKU_DB=JSON.parse(localStorage.getItem(LS.sku)||'[]');STOCK_DB=JSON.parse(localStorage.getItem(LS.stock)||'[]');META=JSON.parse(localStorage.getItem(LS.meta)||'{}')}catch(e){SKU_DB=[];STOCK_DB=[];META={}}}
-function clearDB(type){if(type==='sku'){SKU_DB=[];META.sku=null}else{STOCK_DB=[];META.stock=null}saveDB();refreshSavedStatus();checkReady()}
-function clearAll(){SKU_DB=[];STOCK_DB=[];META={};if(lsAvailable()){localStorage.removeItem(LS.sku);localStorage.removeItem(LS.stock);localStorage.removeItem(LS.meta)}refreshSavedStatus();checkReady();const s=document.getElementById('s-clear');s.className='st ok';s.style.display='inline-block';s.textContent=L==='ar'?'✅ تم حذف كل البيانات المحفوظة':'✅ All saved data cleared'}
+function saveDB(){if(!lsAvailable())return;try{localStorage.setItem(LS.sku,JSON.stringify(SKU_DB));localStorage.setItem(LS.stock,JSON.stringify(STOCK_DB));localStorage.setItem(LS.price,JSON.stringify(PRICE_DB));localStorage.setItem(LS.zfix,JSON.stringify(ZFIX));localStorage.setItem(LS.meta,JSON.stringify(META))}catch(e){console.warn(e)}}
+function loadDB(){if(!lsAvailable())return;try{SKU_DB=JSON.parse(localStorage.getItem(LS.sku)||'[]');STOCK_DB=JSON.parse(localStorage.getItem(LS.stock)||'[]');PRICE_DB=JSON.parse(localStorage.getItem(LS.price)||'[]');ZFIX=JSON.parse(localStorage.getItem(LS.zfix)||'{}');META=JSON.parse(localStorage.getItem(LS.meta)||'{}')}catch(e){SKU_DB=[];STOCK_DB=[];PRICE_DB=[];ZFIX={};META={}}}
+function clearDB(type){if(type==='sku'){SKU_DB=[];META.sku=null}else if(type==='stock'){STOCK_DB=[];META.stock=null}else if(type==='price'){PRICE_DB=[];META.price=null}saveDB();refreshSavedStatus();checkReady()}
+function clearAll(){SKU_DB=[];STOCK_DB=[];PRICE_DB=[];ZFIX={};META={};if(lsAvailable()){localStorage.removeItem(LS.sku);localStorage.removeItem(LS.stock);localStorage.removeItem(LS.price);localStorage.removeItem(LS.zfix);localStorage.removeItem(LS.meta)}refreshSavedStatus();checkReady();const s=document.getElementById('s-clear');s.className='st ok';s.style.display='inline-block';s.textContent=L==='ar'?'✅ تم حذف كل البيانات المحفوظة':'✅ All saved data cleared'}
 
 // ===== LANGUAGE =====
-function togLang(){L=L==='ar'?'en':'ar';document.getElementById('lb').textContent=L==='ar'?'EN':'AR';document.documentElement.lang=L;document.documentElement.dir=L==='ar'?'rtl':'ltr';document.querySelectorAll('[d-a][d-e]').forEach(el=>el.textContent=el.getAttribute('d-'+(L==='ar'?'a':'e')));refreshSavedStatus()}
+function applyLang(){document.getElementById('lb').textContent=L==='ar'?'EN':'AR';document.documentElement.lang=L;document.documentElement.dir=L==='ar'?'rtl':'ltr';document.querySelectorAll('[d-a][d-e]').forEach(el=>el.textContent=el.getAttribute('d-'+(L==='ar'?'a':'e')));refreshSavedStatus()}
+function togLang(){L=L==='ar'?'en':'ar';applyLang()}
 
 // ===== FILE HANDLING =====
-function onFile(input,type){const f=input.files[0];if(!f)return;if(type==='pdf'){FILES.pdf=f;const st=document.getElementById('s-pdf');st.className='st ok';st.textContent=(L==='ar'?'✅ تم التحميل: ':'✅ Loaded: ')+f.name+' ('+(f.size/1024).toFixed(1)+' KB)';document.getElementById('c-pdf').classList.add('on');checkReady();return}if(type==='sku')readSKU(f);if(type==='stock')readStock(f)}
+function onFile(input,type){const f=input.files[0];if(!f)return;if(type==='pdf'){FILES.pdf=f;const st=document.getElementById('s-pdf');st.className='st ok';st.textContent=(L==='ar'?'✅ تم التحميل: ':'✅ Loaded: ')+f.name+' ('+(f.size/1024).toFixed(1)+' KB)';document.getElementById('c-pdf').classList.add('on');checkReady();return}if(type==='sku')readSKU(f);if(type==='stock')readStock(f);if(type==='price')readPrice(f)}
 function checkReady(){document.getElementById('runBtn').disabled=!FILES.pdf}
-function refreshSavedStatus(){const map=[['sku',SKU_DB,'c-sku','s-sku'],['stock',STOCK_DB,'c-stock','s-stock']];for(const row of map){const k=row[0],db=row[1],card=document.getElementById(row[2]),st=document.getElementById(row[3]);if(db&&db.length){card.classList.add('saved');const meta=META[k]||{};st.className='st info';st.textContent=(L==='ar'?'💾 محفوظ: ':'💾 Saved: ')+db.length+(L==='ar'?' سطر':' rows')+(meta.name?' — '+meta.name:'')+(meta.date?' — '+meta.date:'')}else{card.classList.remove('saved');st.className='st';st.textContent='';st.style.display='none'}}}
+function refreshSavedStatus(){const map=[['sku',SKU_DB,'c-sku','s-sku'],['stock',STOCK_DB,'c-stock','s-stock'],['price',PRICE_DB,'c-price','s-price']];for(const row of map){const k=row[0],db=row[1],card=document.getElementById(row[2]),st=document.getElementById(row[3]);if(db&&db.length){card.classList.add('saved');const meta=META[k]||{};st.className='st info';st.textContent=(L==='ar'?'💾 محفوظ: ':'💾 Saved: ')+db.length+(L==='ar'?' سطر':' rows')+(meta.name?' — '+meta.name:'')+(meta.date?' — '+meta.date:'')}else{card.classList.remove('saved');st.className='st';st.textContent='';st.style.display='none'}}}
 
 // ===== READERS =====
 function normCode(s){return String(s||'').trim().replace(/\s/g,'')}
 function normLoose(s){return normCode(s).replace(/^0+/,'').replace(/\./g,'')}
 async function readSKU(file){log(L==='ar'?'قراءة ملف الأصناف...':'Reading SKUs...','i');try{const data=await file.arrayBuffer();const wb=XLSX.read(data,{type:'array'});const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1});let hIdx=0;for(let i=0;i<Math.min(6,json.length);i++){const r=(json[i]||[]).map(c=>String(c||'').trim().toLowerCase());if(r.some(x=>/zrep|article|description|category/.test(x))){hIdx=i;break}}const h=(json[hIdx]||[]).map(x=>String(x||'').trim());const zi=h.findIndex(x=>/zrep/i.test(x));const ai=h.findIndex(x=>/article|material|sku/i.test(x));const di=h.findIndex(x=>/description/i.test(x));const ci=h.findIndex(x=>/category/i.test(x));const bi=h.findIndex(x=>/brand/i.test(x));SKU_DB=[];for(let i=hIdx+1;i<json.length;i++){const r=json[i];if(!r||!r.length)continue;const z=zi>=0?normCode(r[zi]):'';const a=ai>=0?normCode(r[ai]):'';if(!z&&!a)continue;SKU_DB.push({zrep:z,article:a,desc:di>=0?String(r[di]||'').trim():'',cat:ci>=0?String(r[ci]||'').trim():'',brand:bi>=0?String(r[bi]||'').trim():''})}META.sku={name:file.name,date:new Date().toISOString().split('T')[0]};saveDB();refreshSavedStatus();log('✅ '+(L==='ar'?'الأصناف: ':'SKUs: ')+SKU_DB.length,'s');toast((L==='ar'?'✅ تم تحديث ملف الأصناف — ':'✅ SKUs file updated — ')+SKU_DB.length+(L==='ar'?' صنف':' items'),'ok')}catch(e){log('SKU Error: '+e.message,'e');toast((L==='ar'?'⚠️ خطأ في ملف الأصناف: ':'⚠️ SKUs error: ')+e.message,'err')}}
 async function readStock(file){log(L==='ar'?'قراءة المخزون...':'Reading Stock...','i');try{const data=await file.arrayBuffer();let wb;if(file.name.toLowerCase().endsWith('.csv')){const txt=new TextDecoder('utf-8').decode(data);wb=XLSX.read(txt,{type:'string',codepage:65001})}else{wb=XLSX.read(data,{type:'array'})}const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1});let hIdx=0;for(let i=0;i<Math.min(6,json.length);i++){const r=(json[i]||[]).map(c=>String(c||'').trim().toLowerCase());if(r.some(x=>/material|zrep|unrestric|stock|qty/.test(x))){hIdx=i;break}}const h=(json[hIdx]||[]).map(x=>String(x||'').trim());const mi=h.findIndex(x=>/material|article/i.test(x));const zi=h.findIndex(x=>/zrep/i.test(x));const di=h.findIndex(x=>/description/i.test(x));const qi=h.findIndex(x=>/unrestric|stock|qty|quantity|on hand|keyacc/i.test(x));STOCK_DB=[];for(let i=hIdx+1;i<json.length;i++){const r=json[i];if(!r||!r.length)continue;const m=mi>=0?normCode(r[mi]):'';const z=zi>=0?normCode(r[zi]):'';if(!m&&!z)continue;STOCK_DB.push({material:m,zrep:z,desc:di>=0?String(r[di]||'').trim():'',qty:qi>=0?(parseFloat(r[qi])||0):0})}META.stock={name:file.name,date:new Date().toISOString().split('T')[0]};saveDB();refreshSavedStatus();log('✅ '+(L==='ar'?'المخزون: ':'Stock: ')+STOCK_DB.length,'s');toast((L==='ar'?'✅ تم تحديث ملف المخزون — ':'✅ Stock file updated — ')+STOCK_DB.length+(L==='ar'?' سطر':' rows'),'ok')}catch(e){log('Stock Error: '+e.message,'e');toast((L==='ar'?'⚠️ خطأ في ملف المخزون: ':'⚠️ Stock error: ')+e.message,'err')}}
+
+async function readPrice(file){log(L==='ar'?'قراءة ملف الأسعار...':'Reading Pricing...','i');try{const data=await file.arrayBuffer();let wb;if(file.name.toLowerCase().endsWith('.csv')){const txt=new TextDecoder('utf-8').decode(data);wb=XLSX.read(txt,{type:'string',codepage:65001})}else{wb=XLSX.read(data,{type:'array'})}const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1});let hIdx=0;for(let i=0;i<Math.min(6,json.length);i++){const r=(json[i]||[]).map(c=>String(c||'').trim().toLowerCase());if(r.some(x=>/code|zrep|material|article|price/.test(x))){hIdx=i;break}}const h=(json[hIdx]||[]).map(x=>String(x||'').trim());let ci=h.findIndex(x=>/product\s*code/i.test(x));if(ci<0)ci=h.findIndex(x=>/^code$|zrep|material|^article$/i.test(x));let pi=h.findIndex(x=>/^sap\s*price$/i.test(x));if(pi<0)pi=h.findIndex(x=>/price/i.test(x)&&!/unit|cs|sb|pc/i.test(x));const sbi=h.findIndex(x=>/sb\s*price/i.test(x));const csi=h.findIndex(x=>/cs\s*price/i.test(x));const cati=h.findIndex(x=>/category/i.test(x));const ni=h.findIndex(x=>/name|description/i.test(x));const ui=h.findIndex(x=>/unit/i.test(x));PRICE_DB=[];for(let i=hIdx+1;i<json.length;i++){const r=json[i];if(!r||!r.length)continue;const code=ci>=0?normCode(r[ci]):'';const sap=pi>=0?(parseFloat(r[pi])||0):0;const sb=sbi>=0?(parseFloat(r[sbi])||0):0;const cs=csi>=0?(parseFloat(r[csi])||0):0;if(!code)continue;PRICE_DB.push({zrep:code,price:sap,sap:sap,sb:sb,cs:cs,cat:cati>=0?String(r[cati]||'').trim():'',name:ni>=0?String(r[ni]||'').trim():'',unit:ui>=0?String(r[ui]||'').trim():''})}META.price={name:file.name,date:new Date().toISOString().split('T')[0]};saveDB();refreshSavedStatus();log('✅ '+(L==='ar'?'الأسعار: ':'Prices: ')+PRICE_DB.length,'s');toast((L==='ar'?'✅ تم تحديث ملف الأسعار — ':'✅ Pricing file updated — ')+PRICE_DB.length+(L==='ar'?' سعر':' prices'),'ok')}catch(e){log('Price Error: '+e.message,'e');toast((L==='ar'?'⚠️ خطأ في ملف الأسعار: ':'⚠️ Pricing error: ')+e.message,'err')}}
 
 // ===== PDF LINE RECONSTRUCTION =====
 function reconstructLines(tc){const buckets=[];for(const it of tc.items){if(!it.str||!it.str.trim())continue;const y=it.transform[5],x=it.transform[4];let b=null;for(const k of buckets){if(Math.abs(k.y-y)<=2.2){b=k;break}}if(!b){b={y:y,items:[]};buckets.push(b)}b.items.push({x:x,s:it.str})}buckets.sort((a,b)=>b.y-a.y);return buckets.map(b=>b.items.sort((a,b)=>a.x-b.x).map(o=>o.s).join(' ').replace(/\s+/g,' ').trim())}
@@ -297,7 +324,7 @@ function pnum(t){const neg=t.endsWith('-');t=t.replace(/-/g,'');const v=parseFlo
 function dataNums(l){return stripPipes(l).split(/\s+/).filter(x=>NUMTOK.test(x)).map(pnum)}
 function parseAll(lines){const items=[];for(const l of lines){const r=l.match(/Region:\s*([0-9]{0,4}\s*[A-Za-z][A-Za-z ]+Region)/);if(r){REGION=r[1].trim();break}}
 for(let i=0;i<lines.length;i++){const m=stripPipes(lines[i]).match(HDR);if(!m)continue;
-const it={article:m[1].trim(),name:m[2].trim().replace(/\s+/g,' '),status:m[3].toUpperCase(),zrep:(m[4]||'').trim(),vendor:(m[5]||'337618').trim(),barcode:'',category:'',brand:'',catSrc:'',stockQty:0,stockMatch:false,incomplete:false,qtySold:[],onHand:[],onOrder:[]};
+const it={article:m[1].trim(),name:m[2].trim().replace(/\s+/g,' '),status:m[3].toUpperCase(),zrep:(m[4]||'').trim(),vendor:(m[5]||'337618').trim(),barcode:'',category:'',brand:'',catSrc:'',stockQty:0,stockMatch:false,price:0,priceMatch:false,incomplete:false,qtySold:[],onHand:[],onOrder:[]};
 const bc=lines[i].match(/Barcode:\s*(\d+)/i);if(bc)it.barcode=bc[1];
 const rows=[];let j=i+1;while(j<lines.length&&rows.length<6){if(stripPipes(lines[j]).match(HDR))break;if(isDataRow(lines[j]))rows.push(dataNums(lines[j]));j++}
 const A=k=>{const r=rows[k]||[];const o=r.slice(0,20);while(o.length<20)o.push(0);return o};const B=k=>{const r=rows[k]||[];const o=r.slice(0,4);while(o.length<4)o.push(0);return o};
@@ -311,22 +338,25 @@ function deriveCatBrand(it){const up=it.name.toUpperCase();let bc='';for(const r
 
 // ===== LINKING by ZREP =====
 function addKey(idx,k,v){if(k&&!(k in idx))idx[k]=v}
-function buildIndexes(){SKU_BY_ZREP={};for(const s of SKU_DB){addKey(SKU_BY_ZREP,s.zrep,s);addKey(SKU_BY_ZREP,normLoose(s.zrep),s)}STOCK_BY_ZREP={};for(const s of STOCK_DB){addKey(STOCK_BY_ZREP,s.zrep,s);addKey(STOCK_BY_ZREP,normLoose(s.zrep),s);addKey(STOCK_BY_ZREP,s.material,s);addKey(STOCK_BY_ZREP,normLoose(s.material),s)}}
+function buildIndexes(){SKU_BY_ZREP={};SKU_BY_ARTICLE={};SKU_BY_ARTPREFIX={};for(const s of SKU_DB){addKey(SKU_BY_ZREP,s.zrep,s);addKey(SKU_BY_ZREP,normLoose(s.zrep),s);if(s.article){addKey(SKU_BY_ARTICLE,s.article,s);addKey(SKU_BY_ARTICLE,normLoose(s.article),s);const a=normCode(s.article);if(a.length>3){const pk=a.slice(0,-1);(SKU_BY_ARTPREFIX[pk]=SKU_BY_ARTPREFIX[pk]||[]).push(s)}}}STOCK_BY_ZREP={};for(const s of STOCK_DB){addKey(STOCK_BY_ZREP,s.zrep,s);addKey(STOCK_BY_ZREP,normLoose(s.zrep),s);addKey(STOCK_BY_ZREP,s.material,s);addKey(STOCK_BY_ZREP,normLoose(s.material),s)}PRICE_BY_ZREP={};for(const p of PRICE_DB){addKey(PRICE_BY_ZREP,p.zrep,p);addKey(PRICE_BY_ZREP,normLoose(p.zrep),p)}}
+function fuzzyArticle(art){if(art.length<=3)return null;const cands=SKU_BY_ARTPREFIX[art.slice(0,-1)];if(!cands||!cands.length)return null;const zs=[...new Set(cands.filter(c=>c.zrep).map(c=>normLoose(c.zrep)))];if(zs.length===1)return cands.find(c=>c.zrep);return null}
 function lookupStock(it){const keys=[['zrep',it.zrep],['zrep~',normLoose(it.zrep)],['article',it.article],['article~',normLoose(it.article)]];for(const kv of keys){if(kv[1]&&STOCK_BY_ZREP[kv[1]])return{row:STOCK_BY_ZREP[kv[1]],key:kv[0]}}return null}
-function linkAll(){buildIndexes();let zl=0,sl=0,cat=0,cm=0;for(const it of ITEMS){if(it.zrep)zl++;const s=SKU_BY_ZREP[it.zrep]||SKU_BY_ZREP[normLoose(it.zrep)];if(s){if(s.cat){it.category=s.cat;it.catSrc='file'}if(s.brand)it.brand=s.brand;cm++}if(it.category)cat++;const m=lookupStock(it);if(m){it.stockQty=m.row.qty;it.stockMatch=true;it.stockKey=m.key;sl++}else{it.stockKey=''}}return{zl,sl,cat,cm}}
+function lookupPrice(it){const keys=[it.zrep,normLoose(it.zrep),it.article,normLoose(it.article)];for(const k of keys){if(k&&PRICE_BY_ZREP[k])return PRICE_BY_ZREP[k]}return null}
+function linkAll(){buildIndexes();let zl=0,sl=0,cat=0,cm=0,pl=0,af=0,fz=0;for(const it of ITEMS){if(it.zrep0==null)it.zrep0=it.zrep;const art=normCode(it.article),artL=normLoose(it.article);let byArt=SKU_BY_ARTICLE[art]||SKU_BY_ARTICLE[artL];let isFuzzy=false;if(!byArt){const fzm=fuzzyArticle(art);if(fzm){byArt=fzm;isFuzzy=true}}const authZ=(byArt&&byArt.zrep)?byArt.zrep:'';const fx=ZFIX[art]||ZFIX[artL];it.zrep=fx||authZ||it.zrep0;it.zrepFixed=!!(fx||authZ);it.zrepSrc=fx?'manual':(authZ?(isFuzzy?'sku~':'sku'):'report');it.zrepFuzzyFrom=(authZ&&isFuzzy)?byArt.article:'';if(authZ&&!fx&&normLoose(authZ)!==normLoose(it.zrep0)){af++;if(isFuzzy)fz++}if(it.zrep)zl++;const s=byArt||SKU_BY_ZREP[it.zrep]||SKU_BY_ZREP[normLoose(it.zrep)];if(s){if(s.cat){it.category=s.cat;it.catSrc='file'}if(s.brand)it.brand=s.brand;cm++}if(it.category)cat++;const m=lookupStock(it);if(m){it.stockQty=m.row.qty;it.stockMatch=true;it.stockKey=m.key;sl++}else{it.stockKey=''}const p=lookupPrice(it);if(p){const isGF=c=>/gum|frui|confection/i.test(c||'');const sap=(p.sap!=null?p.sap:p.price)||0;const sb=p.sb||0;const cs=p.cs||0;const useSB=isGF(p.cat)||isGF(it.category);if(useSB){it.price=sb>0?sb:(cs>0?cs:sap);it.priceBasis=sb>0?'SB':(cs>0?'CS':'SAP')}else{it.price=sap;it.priceBasis='SAP'}it.priceMatch=true;pl++}else{it.price=0;it.priceMatch=false;it.priceBasis=''}}return{zl,sl,cat,cm,pl,af,fz}}
 
 // ===== BUILD ROWS =====
 function round1(v){return Math.round((v||0)*10)/10}
+function round2(v){return Math.round((v||0)*100)/100}
 function blank0(v){return(v===0||v===null||v===undefined||v==='')?null:v}
 function sum(a){let t=0;for(const x of a)t+=(x||0);return t}
-function buildRows(){const rows=[];for(const it of ITEMS){for(let i=0;i<STORES.length;i++){rows.push({Region:REGION||'',Store:STORES[i],Danube_Article:it.article,ZREP:it.zrep,Item_Name:it.name,Status:it.status,Vendor:it.vendor,Barcode:it.barcode,Category:it.category||'',Brand:it.brand||'',Qty_Sold:blank0(round1(it.qtySold[i])),On_Hand:blank0(round1(it.onHand[i])),On_Order:blank0(round1(it.onOrder[i])),Stock_Qty:blank0(it.stockQty||0)})}}return rows}
+function buildRows(){const rows=[];for(const it of ITEMS){for(let i=0;i<STORES.length;i++){const ohRaw=it.onHand[i]||0;const pv=it.price||0;rows.push({Region:REGION||'',Store:STORES[i],Danube_Article:it.article,ZREP:it.zrep,Item_Name:it.name,Status:it.status,Vendor:it.vendor,Barcode:it.barcode,Category:it.category||'',Brand:it.brand||'',Qty_Sold:blank0(round1(it.qtySold[i])),On_Hand:blank0(round1(it.onHand[i])),On_Order:blank0(round1(it.onOrder[i])),Stock_Qty:blank0(it.stockQty||0),Price:blank0(round2(pv)),Danube_Stock_Value:(pv>0&&ohRaw!==0)?round2(ohRaw*pv):null})}}return rows}
 
 // ===== EXCEL (ExcelJS — styled) =====
 function buildExcel(sheets){
  const wb=new ExcelJS.Workbook();wb.creator='Danube Converter v7';
  for(const sh of sheets){
    const ws=wb.addWorksheet(sh.name,{views:[{state:'frozen',ySplit:1}]});
-   ws.columns=sh.cols.map(c=>({header:c.en+'\n('+c.ar+')',key:c.k,style:{alignment:{vertical:'middle',horizontal:c.left?'left':'center'},numFmt:c.num===2?'#,##0':(c.num?'0.0':undefined)}}));
+   ws.columns=sh.cols.map(c=>({header:c.en+'\n('+c.ar+')',key:c.k,style:{alignment:{vertical:'middle',horizontal:c.left?'left':'center'},numFmt:c.num===3?'#,##0.00':(c.num===2?'#,##0':(c.num?'0.0':undefined))}}));
    for(const r of sh.rows)ws.addRow(r);
    const hr=ws.getRow(1);hr.height=34;
    hr.eachCell(function(cell){cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:HEADER_ARGB}};cell.font={name:'Calibri',bold:true,size:11,color:{argb:'FFFFFFFF'}};cell.alignment={vertical:'middle',horizontal:'center',wrapText:true};cell.border=BORD});
@@ -340,10 +370,10 @@ function buildExcel(sheets){
 }
 function buildWB(){
  const full={name:'Full Data',cols:COLS_FULL,rows:ROWS};
- const ss={};for(const r of ROWS){if(!ss[r.Store])ss[r.Store]={Region:r.Region,Store:r.Store,Qty_Sold:0,On_Hand:0,On_Order:0};ss[r.Store].Qty_Sold+=r.Qty_Sold;ss[r.Store].On_Hand+=r.On_Hand;ss[r.Store].On_Order+=r.On_Order}
- const storeRows=Object.values(ss).map(v=>({Region:v.Region,Store:v.Store,Qty_Sold:blank0(round1(v.Qty_Sold)),On_Hand:blank0(round1(v.On_Hand)),On_Order:blank0(round1(v.On_Order))}));
+ const ss={};for(const r of ROWS){if(!ss[r.Store])ss[r.Store]={Region:r.Region,Store:r.Store,Qty_Sold:0,On_Hand:0,On_Order:0,Stock_Value:0};ss[r.Store].Qty_Sold+=r.Qty_Sold;ss[r.Store].On_Hand+=r.On_Hand;ss[r.Store].On_Order+=r.On_Order;ss[r.Store].Stock_Value+=(r.Danube_Stock_Value||0)}
+ const storeRows=Object.values(ss).map(v=>({Region:v.Region,Store:v.Store,Qty_Sold:blank0(round1(v.Qty_Sold)),On_Hand:blank0(round1(v.On_Hand)),On_Order:blank0(round1(v.On_Order)),Danube_Stock_Value:blank0(round2(v.Stock_Value))}));
  const store={name:'Store Summary',cols:COLS_STORE,rows:storeRows};
- const skuRows=ITEMS.map(it=>({Danube_Article:it.article,ZREP:it.zrep,Item_Name:it.name,Status:it.status,Barcode:it.barcode,Category:it.category,Brand:it.brand,Qty_Sold:blank0(round1(sum(it.qtySold))),On_Hand:blank0(round1(sum(it.onHand))),On_Order:blank0(round1(sum(it.onOrder))),Stock_Qty:blank0(it.stockQty||0)}));
+ const skuRows=ITEMS.map(it=>({Danube_Article:it.article,ZREP:it.zrep,Item_Name:it.name,Status:it.status,Barcode:it.barcode,Category:it.category,Brand:it.brand,Qty_Sold:blank0(round1(sum(it.qtySold))),On_Hand:blank0(round1(sum(it.onHand))),On_Order:blank0(round1(sum(it.onOrder))),Stock_Qty:blank0(it.stockQty||0),Price:blank0(round2(it.price||0)),Danube_Stock_Value:(it.price>0)?round2(sum(it.onHand)*it.price):null}));
  const sku={name:'SKU Summary',cols:COLS_SKU,rows:skuRows};
  const revRows=ITEMS.filter(i=>!i.zrep||/\./.test(i.zrep)||i.incomplete).map(i=>({Danube_Article:i.article,ZREP:i.zrep||'(missing)',Item_Name:i.name,Category:i.category,Brand:i.brand,Issue:!i.zrep?'No ZREP':(/\./.test(i.zrep)?'Unusual ZREP format':'Partial data')}));
  const review={name:'Review',cols:COLS_REVIEW,rows:revRows.length?revRows:[{Danube_Article:'',ZREP:'',Item_Name:L==='ar'?'لا توجد عناصر تحتاج مراجعة':'No items need review',Category:'',Brand:'',Issue:''}]};
@@ -363,7 +393,7 @@ async function run(){if(!FILES.pdf)return;document.getElementById('prog').style.
   log(L==='ar'?'تحليل كل المنتجات...':'Parsing ALL items...','i');ITEMS=parseAll(RAW_LINES);setProg(66);
   log('✅ '+(L==='ar'?'منتجات: ':'Items: ')+ITEMS.length,'s');
   log(L==='ar'?'ربط ZREP / التصنيف / المخزون...':'Linking...','i');const res=linkAll();setProg(80);
-  log('✅ ZREP '+res.zl+' | SKU '+res.cm+' | Cat '+res.cat+' | Stock '+res.sl,'s');
+  log('✅ ZREP '+res.zl+' | SKU '+res.cm+' | Cat '+res.cat+' | Stock '+res.sl+' | Priced '+res.pl+' | ZREP-fixed '+res.af,'s');
   ROWS=buildRows();setProg(88);log(L==='ar'?'إنشاء Excel احترافي...':'Building styled Excel...','i');buildWB();setProg(100);log('✅ Done!','s');
   setTimeout(()=>{document.getElementById('prog').style.display='none';showRes(res)},500);
  }catch(err){log('❌ Error: '+err.message,'e');console.error(err)}
@@ -375,25 +405,49 @@ function showRes(res){
  document.getElementById('n-store').textContent=STORES.length;document.getElementById('n-sku').textContent=ITEMS.length;
  document.getElementById('n-row').textContent=ROWS.length.toLocaleString();document.getElementById('n-zrep').textContent=res.zl;
  document.getElementById('n-cat').textContent=res.cat;document.getElementById('n-stk').textContent=res.sl;
- const hs=SKU_DB.length>0,ht=STOCK_DB.length>0;
+ const totVal=ROWS.reduce((a,r)=>a+(r.Danube_Stock_Value||0),0);
+ document.getElementById('n-prc').textContent=res.pl;document.getElementById('n-val').textContent=Math.round(totVal).toLocaleString();
+ const hs=SKU_DB.length>0,ht=STOCK_DB.length>0,hp=PRICE_DB.length>0;
  document.getElementById('info').innerHTML=(L==='ar'
-  ?`<h4>📊 نتائج الربط</h4><ul><li>المنطقة: ${REGION||'—'}</li><li>منتجات مقروءة من كل الـ PDF: ${ITEMS.length}</li><li>ZREP من التقرير: ${res.zl}/${ITEMS.length}</li><li>تأكيد من ملف الأصناف: ${res.cm}${hs?'':' (لم يُرفع)'}</li><li>مُصنّف: ${res.cat}/${ITEMS.length}</li><li>مربوط بمخزون مارس: ${res.sl}/${ITEMS.length}${ht?` · غير موجود بالمخزون: ${ITEMS.length-res.sl}`:' (لم يُرفع ملف المخزون)'}</li><li>راجع ورقة <b>Stock Check</b> لمعرفة حالة مخزون كل صنف</li><li>متاجر: ${STORES.length} · صفوف: ${ROWS.length.toLocaleString()}</li></ul>`
-  :`<h4>📊 Results</h4><ul><li>Region: ${REGION||'—'}</li><li>Items read from entire PDF: ${ITEMS.length}</li><li>ZREP from report: ${res.zl}/${ITEMS.length}</li><li>SKU-file confirmed: ${res.cm}${hs?'':' (not uploaded)'}</li><li>Categorized: ${res.cat}/${ITEMS.length}</li><li>Mars stock linked: ${res.sl}/${ITEMS.length}${ht?` · not in stock file: ${ITEMS.length-res.sl}`:' (stock not uploaded)'}</li><li>See the <b>Stock Check</b> sheet for each item's stock status</li><li>Stores: ${STORES.length} · Rows: ${ROWS.length.toLocaleString()}</li></ul>`);
+  ?`<h4>📊 نتائج الربط</h4><ul><li>المنطقة: ${REGION||'—'}</li><li>منتجات مقروءة من كل الـ PDF: ${ITEMS.length}</li><li>ZREP من التقرير: ${res.zl}/${ITEMS.length}</li><li>تأكيد من ملف الأصناف: ${res.cm}${hs?'':' (لم يُرفع)'}</li><li>مُصنّف: ${res.cat}/${ITEMS.length}</li><li>مربوط بمخزون مارس: ${res.sl}/${ITEMS.length}${ht?` · غير موجود بالمخزون: ${ITEMS.length-res.sl}`:' (لم يُرفع ملف المخزون)'}</li><li>راجع ورقة <b>Stock Check</b> لمعرفة حالة مخزون كل صنف</li><li>مُسعّر عبر ZREP: ${res.pl}/${ITEMS.length}${hp?'':' (لم يُرفع ملف الأسعار)'}</li><li>أكواد ZREP صُحّحت تلقائياً عبر Article No: ${res.af}${res.fz?` (منها ${res.fz} مطابقة تقريبية)`:''}</li><li>إجمالي قيمة مخزون الدانوب (المخزون الحالي × السعر): <b>${Math.round(totVal).toLocaleString()}</b> ريال</li><li>متاجر: ${STORES.length} · صفوف: ${ROWS.length.toLocaleString()}</li></ul>`
+  :`<h4>📊 Results</h4><ul><li>Region: ${REGION||'—'}</li><li>Items read from entire PDF: ${ITEMS.length}</li><li>ZREP from report: ${res.zl}/${ITEMS.length}</li><li>SKU-file confirmed: ${res.cm}${hs?'':' (not uploaded)'}</li><li>Categorized: ${res.cat}/${ITEMS.length}</li><li>Mars stock linked: ${res.sl}/${ITEMS.length}${ht?` · not in stock file: ${ITEMS.length-res.sl}`:' (stock not uploaded)'}</li><li>See the <b>Stock Check</b> sheet for each item's stock status</li><li>Priced via ZREP: ${res.pl}/${ITEMS.length}${hp?'':' (pricing not uploaded)'}</li><li>ZREP codes auto-corrected via Article No: ${res.af}${res.fz?` (${res.fz} approximate)`:''}</li><li>Total Danube stock value (On Hand × Price): <b>${Math.round(totVal).toLocaleString()}</b> SAR</li><li>Stores: ${STORES.length} · Rows: ${ROWS.length.toLocaleString()}</li></ul>`);
  if(ITEMS.length<5){document.getElementById('debug').style.display='block';document.getElementById('debugText').textContent=RAW_LINES.slice(0,40).join('\n')}else{document.getElementById('debug').style.display='none'}
  const tbl=document.getElementById('tbl');
  tbl.querySelector('thead').innerHTML='<tr>'+COLS_FULL.map(c=>'<th><div class="hen">'+c.en+'</div><div class="har">'+c.ar+'</div></th>').join('')+'</tr>';
  tbl.querySelector('tbody').innerHTML=ROWS.slice(0,20).map(r=>'<tr>'+COLS_FULL.map(c=>{const v=r[c.k];return '<td>'+(v==null||v===''?'':v)+'</td>'}).join('')+'</tr>').join('');
+ renderZFix();
 }
+
+// ===== ZREP CORRECTIONS =====
+function renderZFix(){
+ const panel=document.getElementById('zfixPanel');if(!panel)return;
+ const T=(a,e)=>L==='ar'?a:e;
+ const need=ITEMS.filter(it=>!it.priceMatch);
+ const fuzzy=ITEMS.filter(it=>it.zrepSrc==='sku~'&&it.priceMatch);
+ const list=need.concat(fuzzy);
+ panel.style.display='block';
+ document.getElementById('zfixHead').innerHTML='<tr><th>'+T('كود الدانوب','Danube Article')+'</th><th>'+T('اسم الصنف','Item Name')+'</th><th>'+T('الفئة','Category')+'</th><th>'+T('الحالة','Status')+'</th><th>'+T('ZREP الحالي','Current ZREP')+'</th><th>'+T('ZREP الصحيح','Correct ZREP')+'</th></tr>';
+ const hint=document.getElementById('zfixHint');
+ if(!list.length){hint.textContent=T('✅ كل الأصناف مرتبطة بسعر.','✅ All items are linked to a price.');document.getElementById('zfixBody').innerHTML='';return}
+ hint.innerHTML=T(
+  '<b>'+need.length+'</b> صنف بدون سعر'+(fuzzy.length?(' · <b>'+fuzzy.length+'</b> مطابقة تقريبية (آخر رقم مختلف) للمراجعة'):'')+'. اكتب كود مارس الصحيح ثم اضغط «تطبيق». ⚠️ الأصناف غير الموجودة بملف الأسعار (مثل بعض الآيس كريم) لن تأخذ سعراً حتى تُضاف.',
+  '<b>'+need.length+'</b> items without a price'+(fuzzy.length?(' · <b>'+fuzzy.length+'</b> approximate matches (last digit differs) to review'):'')+'. Type the correct Mars code then click "Apply". ⚠️ Items not in the pricing file (e.g. some Ice Cream) won\'t get a price until added.');
+ const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+ document.getElementById('zfixBody').innerHTML=list.map(it=>{const status=!it.priceMatch?T('بدون سعر','no price'):(T('تقريبي من ','approx from ')+esc(it.zrepFuzzyFrom));const sc=!it.priceMatch?'#ffce7a':'#5ff0b6';return '<tr><td>'+esc(it.article)+'</td><td style="text-align:left">'+esc(it.name)+'</td><td>'+esc(it.category)+'</td><td style="color:'+sc+'">'+status+'</td><td>'+esc(it.zrep)+'</td><td><input class="zfix-in" data-art="'+esc(it.article)+'" value="'+esc(it.zrep)+'" style="width:130px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--ink);font-family:inherit;text-align:center"></td></tr>'}).join('');
+}
+function applyZFix(){document.querySelectorAll('.zfix-in').forEach(inp=>{const art=normCode(inp.getAttribute('data-art'));const val=normCode(inp.value);if(val)ZFIX[art]=val;else delete ZFIX[art]});saveDB();recalc()}
+function clearZFix(){ZFIX={};saveDB();recalc()}
+function recalc(){if(!ITEMS.length){toast(L==='ar'?'⚠️ لا توجد بيانات — شغّل المعالجة أولاً':'⚠️ No data — run processing first','warn');return}const res=linkAll();ROWS=buildRows();buildWB();showRes(res);toast(L==='ar'?'✅ تم إعادة الحساب':'✅ Recalculated','ok')}
 async function dl(type){const wb=WBS[type];if(!wb)return;try{const buf=await wb.xlsx.writeBuffer();const d=new Date().toISOString().split('T')[0];const names={master:'Danube_Master_'+d+'.xlsx',store:'Danube_Store_'+d+'.xlsx',sku:'Danube_SKU_'+d+'.xlsx',review:'Danube_Review_'+d+'.xlsx'};saveAs(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),names[type])}catch(e){log('Export error: '+e.message,'e')}}
 
 // ===== UTILS =====
 function log(msg,type){const d=document.createElement('div');d.className=type;d.textContent='['+new Date().toLocaleTimeString()+'] '+msg;const l=document.getElementById('logs');l.appendChild(d);l.scrollTop=l.scrollHeight}
 function toast(msg,kind){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(kind||'ok');clearTimeout(t._h);t._h=setTimeout(()=>{t.className='toast '+(kind||'ok')},3600)}
 function setProg(p){document.getElementById('fill').style.width=p+'%'}
-['pdf','sku','stock'].forEach(t=>{const c=document.getElementById('c-'+t);c.addEventListener('dragover',e=>{e.preventDefault();c.classList.add('on')});c.addEventListener('dragleave',()=>c.classList.remove('on'));c.addEventListener('drop',e=>{e.preventDefault();c.classList.remove('on');const fs=e.dataTransfer.files;if(fs.length>0){const inEl=document.getElementById('f-'+t);const dt=new DataTransfer();dt.items.add(fs[0]);inEl.files=dt.files;onFile(inEl,t)}})});
+['pdf','sku','stock','price'].forEach(t=>{const c=document.getElementById('c-'+t);c.addEventListener('dragover',e=>{e.preventDefault();c.classList.add('on')});c.addEventListener('dragleave',()=>c.classList.remove('on'));c.addEventListener('drop',e=>{e.preventDefault();c.classList.remove('on');const fs=e.dataTransfer.files;if(fs.length>0){const inEl=document.getElementById('f-'+t);const dt=new DataTransfer();dt.items.add(fs[0]);inEl.files=dt.files;onFile(inEl,t)}})});
 
 // ===== INIT =====
-loadDB();refreshSavedStatus();checkReady();
+loadDB();applyLang();refreshSavedStatus();checkReady();
 if(!lsAvailable()){const s=document.getElementById('s-clear');s.className='st warn';s.style.display='inline-block';s.textContent=L==='ar'?'⚠️ الحفظ الدائم لا يعمل داخل المعاينة — افتح الملف مباشرةً في المتصفح':'⚠️ Persistent storage off in preview — open the file directly in a browser'}
 </script>
 </body>
